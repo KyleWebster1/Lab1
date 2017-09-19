@@ -44,7 +44,15 @@ public class HuffApp {
 	}
 	
 	private void readInput() {
-		//read input in from the input.txt file and save to originalMessage	field
+		try {
+			originalMessage = new String(Files.readAllBytes(Paths.get("input")));
+		}
+
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 	
 	private void displayOriginalMessage() {

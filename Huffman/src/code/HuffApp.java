@@ -19,7 +19,6 @@ public class HuffApp {
 	private String encodedMessage = "";
 	private String[] codeTable;
 	private String decodedMessage = "";
-	char[] c_array;
 	
 
 	public static void main(String[] args){
@@ -63,7 +62,7 @@ public class HuffApp {
 	
 	private void makeFrequencyTable(String inputString)
 	{
-		c_array = inputString.toCharArray();
+		char [] c_array = inputString.toCharArray();
 		freqTable = new int[ASCII_TABLE_SIZE];
 		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
 		{

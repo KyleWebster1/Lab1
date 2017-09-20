@@ -11,7 +11,7 @@ import java.util.Stack;
 
 
 public class HuffApp {
-	private int[]freqTable;
+	private int[] freqTable;
 	private final static int ASCII_TABLE_SIZE = 128;
 	private String originalMessage = "";
 	private PriorityQ theQueue;
@@ -19,11 +19,13 @@ public class HuffApp {
 	private String encodedMessage = "";
 	private String[] codeTable;
 	private String decodedMessage = "";
+	char[] c_array;
 	
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		new HuffApp();	
 	}
+
 		
 	
 	public HuffApp() {
@@ -60,14 +62,29 @@ public class HuffApp {
 	}
 	
 	private void makeFrequencyTable(String inputString)
-	{	
-		//populate the frequency table using inputString. results are saved to the 
-		//freqTable field
+	{
+		c_array = inputString.toCharArray();
+		freqTable = new int[ASCII_TABLE_SIZE];
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			freqTable[i]= 0;
+		}
+		for(int i =0; i < c_array.length; i++)
+		{
+			freqTable[(int)c_array[i]]++;
+		}
 	}
 	
 	private void displayFrequencyTable()
 	{	
-		//print the frequency table. skipping any elements that are not represented
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			if(freqTable[i]!=0)
+			{
+				System.out.print((char)i + " " + freqTable[i]);
+				System.out.println();
+			}
+		}
 	}
 	
 	private void addToQueue() 

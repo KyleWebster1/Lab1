@@ -92,10 +92,10 @@ public class HuffApp {
 		{
 			if(freqTable[i]!=0)
 			{
-				huffTree = new HuffTree(i, freqTable[i]);
-				theQueue.insert(huffTree);
+				theQueue.insert(huffTree = new HuffTree((char)i, freqTable[i]));
 			}
 		}
+
 	}
 	
 	private void buildTree(PriorityQ hufflist) 

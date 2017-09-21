@@ -88,14 +88,27 @@ public class HuffApp {
 	
 	private void addToQueue() 
 	{
-		//add the values in the frequency table to the PriorityQueue. Hint use the 
-		//PriorityQ class. save the results to theQueue field
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			if(freqTable[i]!=0)
+			{
+				huffTree = new HuffTree(i, freqTable[i]);
+				theQueue.insert(huffTree);
+			}
+		}
 	}
 	
 	private void buildTree(PriorityQ hufflist) 
 	{
-		//pull items from the priority queue and combine them to form 
-		//a HuffTree. Save the results to the huffTree field
+		while(!theQueue.getSize() > 1)
+		{
+			int frequency1 = theQueue.peekMin().getWeight();
+			HuffTree temp1 = theQueue.remove();
+			int frequency2 = theQueue.peekMin().getWeight();
+			HuffTree temp2 = theQueue.remove();
+			huffTree = new HuffTree((frequency1+frequency2), temp1, temp2);
+			theQueue.insert(huffTree);
+		}
 	}
 	
 	private void makeCodeTable(HuffNode huffNode, String bc)

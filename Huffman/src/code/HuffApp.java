@@ -36,6 +36,10 @@ public class HuffApp {
 		displayFrequencyTable();
 		addToQueue();
 		buildTree(theQueue);
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+				codeTable[i]= "";
+		}
 		makeCodeTable(huffTree.root, "");
 		encode();
 		displayEncodedMessage();
@@ -108,29 +112,33 @@ public class HuffApp {
 			int frequency2 = hufflist.peekMin().getWeight();
 			HuffTree temp2 = hufflist.remove();
 			huffTree = new HuffTree((frequency1+frequency2), temp1, temp2);
-			theQueue.insert(huffTree);
+			hufflist.insert(huffTree);
 		}
 	}
 	
 	private void makeCodeTable(HuffNode huffNode, String bc)
 	{
-		if(huffNode.leftChild != null && !huffNode.leftChild.isLeaf())
+
+		if (huffNode.leftChild == null || huffNode.leftChild.isLeaf())
 		{
-			makeCodeTable(huffNode, bc+"0");
-		}
-		else
-		{
-			codeTable[huffNode.leftChild.character] = bc;
+			codeTable[huffNode.leftChild.character] = bc + "0";
 		}
 
-		if(huffNode.rightChild != null && !huffNode.rightChild.isLeaf())
-		{
-			makeCodeTable(huffNode, bc+"1");
-		}
 		else
 		{
-			codeTable[huffNode.rightChild.character] = bc;
+			makeCodeTable(huffNode.leftChild, bc+"0");
 		}
+
+		if(huffNode.rightChild == null || huffNode.rightChild.isLeaf())
+		{
+			codeTable[huffNode.rightChild.character] = bc + "1";
+		}
+
+		else
+		{
+			makeCodeTable(huffNode.rightChild, bc+"1");
+		}
+
 		//hint, this will be a recursive method
 	}
 	
@@ -139,7 +147,7 @@ public class HuffApp {
 		System.out.println("Code Table");
 		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
 		{
-			if(codeTable[i].equals("")||codeTable[i].equals(null))
+			if(codeTable[i].equals("")||codeTable[i]==null)
 			{
 
 			}
@@ -170,4 +178,3 @@ public class HuffApp {
 		System.out.println("Decoded message: " + decodedMessage);
 	}	
 }
-

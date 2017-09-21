@@ -17,7 +17,7 @@ public class HuffApp {
 	private PriorityQ theQueue;
 	private HuffTree huffTree;
 	private String encodedMessage = "";
-	private String[] codeTable;
+	private String[] codeTable = new String[10];
 	private String decodedMessage = "";
 
 
@@ -36,8 +36,7 @@ public class HuffApp {
 		displayFrequencyTable();
 		addToQueue();
 		buildTree(theQueue);
-		//when the following method is implemented, remove the "//", so it executes
-		//makeCodeTable(huffTree.root, "");  						
+		makeCodeTable(huffTree.root, "");
 		encode();
 		displayEncodedMessage();
 		displayCodeTable();
@@ -114,12 +113,42 @@ public class HuffApp {
 	}
 	
 	private void makeCodeTable(HuffNode huffNode, String bc)
-	{		
+	{
+		if(huffNode.leftChild != null && !huffNode.leftChild.isLeaf())
+		{
+			makeCodeTable(huffNode, bc+"0");
+		}
+		else
+		{
+			codeTable[huffNode.leftChild.character] = bc;
+		}
+
+		if(huffNode.rightChild != null && !huffNode.rightChild.isLeaf())
+		{
+			makeCodeTable(huffNode, bc+"1");
+		}
+		else
+		{
+			codeTable[huffNode.rightChild.character] = bc;
+		}
 		//hint, this will be a recursive method
 	}
 	
 	private void displayCodeTable()
-	{	
+	{
+		System.out.println("Code Table");
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			if(codeTable[i].equals("")||codeTable[i].equals(null))
+			{
+
+			}
+			else
+			{
+				System.out.print((char)i + " " + codeTable[i]);
+				System.out.println();
+			}
+		}
 		//print code table, skipping any empty elements
 	}
 	
@@ -141,3 +170,4 @@ public class HuffApp {
 		System.out.println("Decoded message: " + decodedMessage);
 	}	
 }
+

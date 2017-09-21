@@ -19,7 +19,7 @@ public class HuffApp {
 	private String encodedMessage = "";
 	private String[] codeTable;
 	private String decodedMessage = "";
-	
+
 
 	public static void main(String[] args){
 		new HuffApp();	
@@ -28,6 +28,7 @@ public class HuffApp {
 		
 	
 	public HuffApp() {
+		theQueue = new PriorityQ(ASCII_TABLE_SIZE);
 		codeTable = new String[ASCII_TABLE_SIZE];  
 		readInput();
 		displayOriginalMessage();
@@ -75,7 +76,8 @@ public class HuffApp {
 	}
 	
 	private void displayFrequencyTable()
-	{	
+	{
+		System.out.println("Frequency Table");
 		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
 		{
 			if(freqTable[i]!=0)
@@ -97,15 +99,15 @@ public class HuffApp {
 		}
 
 	}
-	
-	private void buildTree(PriorityQ hufflist) 
+
+	private void buildTree(PriorityQ hufflist)
 	{
-		while(!theQueue.getSize() > 1)
+		while(theQueue.getSize() > 1)
 		{
-			int frequency1 = theQueue.peekMin().getWeight();
-			HuffTree temp1 = theQueue.remove();
-			int frequency2 = theQueue.peekMin().getWeight();
-			HuffTree temp2 = theQueue.remove();
+			int frequency1 = hufflist.peekMin().getWeight();
+			HuffTree temp1 = hufflist.remove();
+			int frequency2 = hufflist.peekMin().getWeight();
+			HuffTree temp2 = hufflist.remove();
 			huffTree = new HuffTree((frequency1+frequency2), temp1, temp2);
 			theQueue.insert(huffTree);
 		}

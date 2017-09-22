@@ -17,7 +17,7 @@ public class HuffApp {
 	private PriorityQ theQueue;
 	private HuffTree huffTree;
 	private String encodedMessage = "";
-	private String[] codeTable = new String[10];
+	private String[] codeTable = new String[ASCII_TABLE_SIZE];
 	private String decodedMessage = "";
 
 

@@ -44,7 +44,7 @@ public class HuffApp {
 		encode();
 		displayEncodedMessage();
 		displayCodeTable();
-		decode();
+		decode(huffTree.root);
 		displayDecodedMessage();		
 	}
 	
@@ -163,16 +163,55 @@ public class HuffApp {
 	private void encode()                   
 	{		
 		//use the code table to encode originalMessage. Save result in the encodedMessage field
+		char[] ogMessageArray = originalMessage.toCharArray(); // I set the original message to a char array
+		StringBuilder builder = new StringBuilder(); // I create a string builder so i can piece together the string from the code table.
+			for (int i = 0; i<ogMessageArray.length; i++){ // Loop for going through the original message
+				for (int j = 0; j< ASCII_TABLE_SIZE; j++){ // Loop for ascii table check
+					if(codeTable[j].equals("")||codeTable[j]==null)
+					{
+						
+					} else if((int)ogMessageArray[i] == j){
+						builder.append(codeTable[j]); // pieces together the string
+						
+					}else{
+						
+					}
+					encodedMessage = builder.toString(); // sets to = encoded message
+				}
+			}
+		
 	}
 
 	private void displayEncodedMessage() {
 		System.out.println("\nEncoded message: " + encodedMessage);		
 	}
 
-	private void decode()
+	private void decode(HuffNode inHuff)
 	{
 		//decode the message and store the result in the decodedMessage field
+		String message = encodedMessage; // sets the encoded message to a temporary variable
+		char[] decodeCharArray = message.toCharArray(); // sets the encoded message to char array
+		StringBuilder builder = new StringBuilder(); // string builder to piece together the string later
+		HuffNode root = inHuff; // setting the root node so i can go back to it.
+		HuffNode current = inHuff; // sets a current node to traverse the tree
+			for (int i = 0; i < decodeCharArray.length; i++){ 
+				if(decodeCharArray[i] == '0'){  // Tree traversal 
+					current = current.leftChild;
+				}else if(decodeCharArray[i] == '1'){
+					current = current.rightChild;
+				}else{
+					System.out.println("Houston we have a problem."); // My own personal error message
+				}
+				if(current.isLeaf()){ // tests to see if there is no more nodes to traverse to.
+					builder.append(current.character); //build the String up!
+					current = root; // Reset the current node to the root.
+				}
+			}
+			decodedMessage = builder.toString(); // set the decoded message to the pieced together builder.
+
+		
 	}
+	
 	
 	public void displayDecodedMessage() {
 		System.out.println("Decoded message: " + decodedMessage);

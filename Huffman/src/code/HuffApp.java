@@ -11,22 +11,24 @@ import java.util.Stack;
 
 
 public class HuffApp {
-	private int[]freqTable;
+	private int[] freqTable;
 	private final static int ASCII_TABLE_SIZE = 128;
 	private String originalMessage = "";
 	private PriorityQ theQueue;
 	private HuffTree huffTree;
 	private String encodedMessage = "";
-	private String[] codeTable;
+	private String[] codeTable = new String[ASCII_TABLE_SIZE];
 	private String decodedMessage = "";
-	
 
-	public static void main(String[] args) {
+
+	public static void main(String[] args){
 		new HuffApp();	
 	}
+
 		
 	
 	public HuffApp() {
+		theQueue = new PriorityQ(ASCII_TABLE_SIZE);
 		codeTable = new String[ASCII_TABLE_SIZE];  
 		readInput();
 		displayOriginalMessage();
@@ -34,17 +36,28 @@ public class HuffApp {
 		displayFrequencyTable();
 		addToQueue();
 		buildTree(theQueue);
-		//when the following method is implemented, remove the "//", so it executes
-		//makeCodeTable(huffTree.root, "");  						
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+				codeTable[i]= "";
+		}
+		makeCodeTable(huffTree.root, "");
 		encode();
 		displayEncodedMessage();
 		displayCodeTable();
-		decode();
+		decode(huffTree.root);
 		displayDecodedMessage();		
 	}
 	
 	private void readInput() {
-		//read input in from the input.txt file and save to originalMessage	field
+		try {
+			originalMessage = new String(Files.readAllBytes(Paths.get("input")));
+		}
+
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 	
 	private void displayOriginalMessage() {
@@ -52,51 +65,153 @@ public class HuffApp {
 	}
 	
 	private void makeFrequencyTable(String inputString)
-	{	
-		//populate the frequency table using inputString. results are saved to the 
-		//freqTable field
+	{
+		char [] c_array = inputString.toCharArray();
+		freqTable = new int[ASCII_TABLE_SIZE];
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			freqTable[i]= 0;
+		}
+		for(int i =0; i < c_array.length; i++)
+		{
+			freqTable[(int)c_array[i]]++;
+		}
 	}
 	
 	private void displayFrequencyTable()
-	{	
-		//print the frequency table. skipping any elements that are not represented
+	{
+		System.out.println("Frequency Table");
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			if(freqTable[i]!=0)
+			{
+				System.out.print((char)i + " " + freqTable[i]);
+				System.out.println();
+			}
+		}
 	}
 	
 	private void addToQueue() 
 	{
-		//add the values in the frequency table to the PriorityQueue. Hint use the 
-		//PriorityQ class. save the results to theQueue field
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			if(freqTable[i]!=0)
+			{
+				theQueue.insert(huffTree = new HuffTree((char)i, freqTable[i]));
+			}
+		}
+
 	}
-	
-	private void buildTree(PriorityQ hufflist) 
+
+	private void buildTree(PriorityQ hufflist)
 	{
-		//pull items from the priority queue and combine them to form 
-		//a HuffTree. Save the results to the huffTree field
+		while(theQueue.getSize() > 1)
+		{
+			int frequency1 = hufflist.peekMin().getWeight();
+			HuffTree temp1 = hufflist.remove();
+			int frequency2 = hufflist.peekMin().getWeight();
+			HuffTree temp2 = hufflist.remove();
+			huffTree = new HuffTree((frequency1+frequency2), temp1, temp2);
+			hufflist.insert(huffTree);
+		}
 	}
 	
 	private void makeCodeTable(HuffNode huffNode, String bc)
-	{		
+	{
+
+		if (huffNode.leftChild == null || huffNode.leftChild.isLeaf())
+		{
+			codeTable[huffNode.leftChild.character] = bc + "0";
+		}
+
+		else
+		{
+			makeCodeTable(huffNode.leftChild, bc+"0");
+		}
+
+		if(huffNode.rightChild == null || huffNode.rightChild.isLeaf())
+		{
+			codeTable[huffNode.rightChild.character] = bc + "1";
+		}
+
+		else
+		{
+			makeCodeTable(huffNode.rightChild, bc+"1");
+		}
+
 		//hint, this will be a recursive method
 	}
 	
 	private void displayCodeTable()
-	{	
+	{
+		System.out.println("Code Table");
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		{
+			if(codeTable[i].equals("")||codeTable[i]==null)
+			{
+
+			}
+			else
+			{
+				System.out.print((char)i + " " + codeTable[i]);
+				System.out.println();
+			}
+		}
 		//print code table, skipping any empty elements
 	}
 	
 	private void encode()                   
 	{		
 		//use the code table to encode originalMessage. Save result in the encodedMessage field
+		char[] ogMessageArray = originalMessage.toCharArray(); // I set the original message to a char array
+		StringBuilder builder = new StringBuilder(); // I create a string builder so i can piece together the string from the code table.
+			for (int i = 0; i<ogMessageArray.length; i++){ // Loop for going through the original message
+				for (int j = 0; j< ASCII_TABLE_SIZE; j++){ // Loop for ascii table check
+					if(codeTable[j].equals("")||codeTable[j]==null)
+					{
+						
+					} else if((int)ogMessageArray[i] == j){
+						builder.append(codeTable[j]); // pieces together the string
+						
+					}else{
+						
+					}
+					encodedMessage = builder.toString(); // sets to = encoded message
+				}
+			}
+		
 	}
 
 	private void displayEncodedMessage() {
 		System.out.println("\nEncoded message: " + encodedMessage);		
 	}
 
-	private void decode()
+	private void decode(HuffNode inHuff)
 	{
 		//decode the message and store the result in the decodedMessage field
+		String message = encodedMessage; // sets the encoded message to a temporary variable
+		char[] decodeCharArray = message.toCharArray(); // sets the encoded message to char array
+		StringBuilder builder = new StringBuilder(); // string builder to piece together the string later
+		HuffNode root = inHuff; // setting the root node so i can go back to it.
+		HuffNode current = inHuff; // sets a current node to traverse the tree
+			for (int i = 0; i < decodeCharArray.length; i++){ 
+				if(decodeCharArray[i] == '0'){  // Tree traversal 
+					current = current.leftChild;
+				}else if(decodeCharArray[i] == '1'){
+					current = current.rightChild;
+				}else{
+					System.out.println("Houston we have a problem."); // My own personal error message
+				}
+				if(current.isLeaf()){ // tests to see if there is no more nodes to traverse to.
+					builder.append(current.character); //build the String up!
+					current = root; // Reset the current node to the root.
+				}
+			}
+			decodedMessage = builder.toString(); // set the decoded message to the pieced together builder.
+
+		
 	}
+	
 	
 	public void displayDecodedMessage() {
 		System.out.println("Decoded message: " + decodedMessage);

@@ -29,73 +29,73 @@ public class HuffApp {
 	
 	public HuffApp() {
 		theQueue = new PriorityQ(ASCII_TABLE_SIZE);
-		codeTable = new String[ASCII_TABLE_SIZE];  
+		codeTable = new String[ASCII_TABLE_SIZE];
 		readInput();
 		displayOriginalMessage();
 		makeFrequencyTable(originalMessage);
 		displayFrequencyTable();
 		addToQueue();
 		buildTree(theQueue);
-		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++) //fills the array with blank strings to prevent any null pointer errors
 		{
-				codeTable[i]= "";
+			codeTable[i]= "";
 		}
 		makeCodeTable(huffTree.root, "");
 		encode();
 		displayEncodedMessage();
 		displayCodeTable();
 		decode(huffTree.root);
-		displayDecodedMessage();		
+		displayDecodedMessage();
 	}
-	
+
 	private void readInput() {
 		try {
-			originalMessage = new String(Files.readAllBytes(Paths.get("input")));
+			originalMessage = new String(Files.readAllBytes(Paths.get("input"))); //reads the original Message and saves to originalMessage
 		}
 
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			e.printStackTrace(); //Prints an error message
 		}
 
 	}
-	
+
 	private void displayOriginalMessage() {
 		System.out.println("Original message: " +  originalMessage);
 	}
-	
+
 	private void makeFrequencyTable(String inputString)
 	{
-		char [] c_array = inputString.toCharArray();
+		char [] c_array = inputString.toCharArray(); //turns string message into characters
 		freqTable = new int[ASCII_TABLE_SIZE];
 		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
 		{
-			freqTable[i]= 0;
+			freqTable[i]= 0;//fills the array with 0 to prevent a null pointer error
 		}
 		for(int i =0; i < c_array.length; i++)
 		{
-			freqTable[(int)c_array[i]]++;
+			freqTable[(int)c_array[i]]++; //makes a table where frequency at a certain int value is calculated
 		}
 	}
-	
+
 	private void displayFrequencyTable()
 	{
 		System.out.println("Frequency Table");
 		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
 		{
-			if(freqTable[i]!=0)
+			if(freqTable[i]!=0) //looks for frequencies to print
 			{
 				System.out.print((char)i + " " + freqTable[i]);
 				System.out.println();
 			}
 		}
 	}
-	
-	private void addToQueue() 
+
+	private void addToQueue()
 	{
 		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
 		{
-			if(freqTable[i]!=0)
+			if(freqTable[i]!=0) //looks at frequencies to add to theQueue
 			{
 				theQueue.insert(huffTree = new HuffTree((char)i, freqTable[i]));
 			}
@@ -105,7 +105,7 @@ public class HuffApp {
 
 	private void buildTree(PriorityQ hufflist)
 	{
-		while(theQueue.getSize() > 1)
+		while(theQueue.getSize() > 1) //merges theQueue items and builds a HuffTree
 		{
 			int frequency1 = hufflist.peekMin().getWeight();
 			HuffTree temp1 = hufflist.remove();
@@ -115,11 +115,11 @@ public class HuffApp {
 			hufflist.insert(huffTree);
 		}
 	}
-	
+
 	private void makeCodeTable(HuffNode huffNode, String bc)
 	{
 
-		if (huffNode.leftChild == null || huffNode.leftChild.isLeaf())
+		if (huffNode.leftChild == null || huffNode.leftChild.isLeaf()) //finds all left nodes for characters and their paths
 		{
 			codeTable[huffNode.leftChild.character] = bc + "0";
 		}
@@ -129,7 +129,7 @@ public class HuffApp {
 			makeCodeTable(huffNode.leftChild, bc+"0");
 		}
 
-		if(huffNode.rightChild == null || huffNode.rightChild.isLeaf())
+		if(huffNode.rightChild == null || huffNode.rightChild.isLeaf()) //finds all right nodes for characters and their paths
 		{
 			codeTable[huffNode.rightChild.character] = bc + "1";
 		}
@@ -141,17 +141,17 @@ public class HuffApp {
 
 		//hint, this will be a recursive method
 	}
-	
+
 	private void displayCodeTable()
 	{
 		System.out.println("Code Table");
-		for(int i = 0; i < ASCII_TABLE_SIZE; i++)
+		for(int i = 0; i < ASCII_TABLE_SIZE; i++) //searches all characters for shortened binary codes
 		{
-			if(codeTable[i].equals("")||codeTable[i]==null)
+			if(codeTable[i].equals("")||codeTable[i]==null) //prevents null pointer exception errors
 			{
 
 			}
-			else
+			else //prints found characters and their location
 			{
 				System.out.print((char)i + " " + codeTable[i]);
 				System.out.println();
@@ -159,7 +159,7 @@ public class HuffApp {
 		}
 		//print code table, skipping any empty elements
 	}
-	
+
 	private void encode()                   
 	{		
 		//use the code table to encode originalMessage. Save result in the encodedMessage field
